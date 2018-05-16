@@ -23,7 +23,11 @@ $(function() {
          */
         it('are defined', function() {
             expect(allFeeds).toBeDefined();
-            expect(allFeeds.length > 0).toBe(true);
+            // this was suggested, but I like
+            // expect(allFeeds.length > 0).toBe(true);
+            // because allFeeds might not have a length
+            // and would still pass this test--undefined is not zero
+            expect(allFeeds.length).not.toBe(0);
         });
 
         /* Done 5.15.2018 TODO: Write a test that loops through each feed
@@ -33,7 +37,7 @@ $(function() {
         it('has all feed urls defined', function() {
             allFeeds.forEach(function(feed) {
                 expect(feed.url).toBeDefined();
-                expect(feed.url.length > 0).toBe(true);
+                expect(feed.url.length).not.toBe(0);
             });
         });
 
@@ -44,7 +48,7 @@ $(function() {
         it('has all feed names defined', function() {
             allFeeds.forEach(function(feed) {
                 expect(feed.name).toBeDefined();
-                expect(feed.name.length > 0).toBe(true);
+                expect(feed.name.length).not.toBe(0);
             });
         });
     });
@@ -52,8 +56,8 @@ $(function() {
 
     /* Done 5.15.2018 TODO: Write a new test suite named "The menu" */
     describe('The menu', function() {
-        var menu = document.querySelector('body');
-        var menuLink = document.querySelector('.menu-icon-link');
+        var menu = $('body');
+        var menuLink = $('.menu-icon-link');
 
         /* Done 5.15.2018 TODO: Write a test that ensures the menu element is
          * hidden by default. You'll have to analyze the HTML and
@@ -61,7 +65,8 @@ $(function() {
          * hiding/showing of the menu element.
          */
         it('is hidden by default', function() {
-            expect(menu.classList.contains('menu-hidden')).toBe(true);
+            // changed .contains to .hasClass per required comment
+            expect(menu.hasClass('menu-hidden')).toBe(true);
         });
 
          /* Done 5.15.2018 TODO: Write a test that ensures the menu changes
@@ -70,11 +75,11 @@ $(function() {
           * clicked and does it hide when clicked again.
           */
         it('toggles appearance with clicks', function() {
-            expect(menu.classList.contains('menu-hidden')).toBe(true);
+            expect(menu.hasClass('menu-hidden')).toBe(true);
             menuLink.click();
-            expect(menu.classList.contains('menu-hidden')).toBe(false);
+            expect(menu.hasClass('menu-hidden')).toBe(false);
             menuLink.click();
-            expect(menu.classList.contains('menu-hidden')).toBe(true);
+            expect(menu.hasClass('menu-hidden')).toBe(true);
         });
     });
 
@@ -91,19 +96,23 @@ $(function() {
          * the use of Jasmine's beforeEach and asynchronous done() function.
          */
         it('have at least one entry', function() {
-            expect($('.feed').find('.entry')).toBeDefined();
+            // changed .find to .length per required comment
+            expect($('.feed .entry').length).not.toBe(0);
         });
     });
 
     /* Done 5.15.2018 TODO: Write a new test suite named "New Feed Selection" */
     describe('New Feed Selection', function() {
+        // this was marked as incorrect. I loaded 1 then 0 (since 0 was already
+        // loaded). I switched order so that so 0 loads, then 1 loads. Also,
+        // I changed comparing the first heading to comparing the entire feed.
         var content0;
         var content1;
         beforeEach(function(done) {
-            loadFeed(1, function() {
-                content1 = $('.feed').find('h2').first().text();
-                loadFeed(0, function() {
-                    content0 = $('.feed').find('h2').first().text();
+            loadFeed(0, function() {
+                content0 = $('.feed').html();
+                loadFeed(1, function() {
+                    content1 = $('.feed').html();
                     done();
                 });
             });
